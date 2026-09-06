@@ -56,7 +56,7 @@ namespace MiniGTA.EditorTools
             // removed first so re-running does not stack two pause menus on top of each other.
             var owned = new System.Collections.Generic.List<string>
             {
-                "MainMenu", "PauseMenu", "SettingsPanel", "FullMap",
+                "MainMenu", "PauseMenu", "SettingsPanel", "FullMap", "HudLayoutEditor",
                 "PauseButton", "MapButton", "AudioManager", "DialoguePanel",
                 "CheatPanel", "CheatCorner",
             };
@@ -74,6 +74,8 @@ namespace MiniGTA.EditorTools
             var layout = BuildHudLayout(canvas);
 
             var settings = BuildSettingsPanel(canvas);
+            var layoutEditor = BuildHudLayoutEditor(canvas);
+            settings.LayoutEditor = layoutEditor;
             var map = BuildFullMap(canvas, circle);
             var pause = BuildPauseMenu(canvas);
 
@@ -583,6 +585,10 @@ namespace MiniGTA.EditorTools
                                              new Vector2(1000f, 34f), UiTheme.Small,
                                              FontStyle.Normal, Muted);
 
+            panel.CustomiseHudButton = WideButton(card, "CustomiseHud", "CUSTOMISE CONTROLS",
+                                                 new Vector2(0f, -256f), new Vector2(420f, 62f),
+                                                 out _, UiTheme.ButtonTone.Normal, "settings");
+
             panel.BackButton = WideButton(card, "Back", "BACK", new Vector2(0f, -328f),
                                           new Vector2(420f, 62f), out _,
                                           UiTheme.ButtonTone.Quiet, "back");
@@ -590,6 +596,137 @@ namespace MiniGTA.EditorTools
         }
 
         // ------------------------------------------------------------- full map
+
+        /// <summary>
+        /// The touch-control layout editor.
+        ///
+        /// A deliberately thin strip along the top rather than a full card: the whole point is
+        /// to see and reach the real controls underneath it while it is open, and a panel in
+        /// the middle of the screen would sit exactly where the player needs to drag things.
+        /// </summary>
+        static HudLayoutEditor BuildHudLayoutEditor(GameObject canvas)
+        {
+            var root = SceneAssembler.NewUi(canvas, "HudLayoutEditor");
+            var rrt = root.GetComponent<RectTransform>();
+            rrt.anchorMin = new Vector2(0f, 1f);
+            rrt.anchorMax = new Vector2(1f, 1f);
+            rrt.pivot = new Vector2(0.5f, 1f);
+            rrt.offsetMin = new Vector2(0f, -250f);
+            rrt.offsetMax = new Vector2(0f, 0f);
+
+            var panel = root.AddComponent<HudLayoutEditor>();
+
+            // A flat panel, not one of the kit's framed tiles.
+            //
+            // Both framed sprites were tried and the build-time frame audit refused both, and
+            // it was right to: shop-container-large paints a 165 px border and the card paints
+            // 74, against a strip only 250 tall. There is no sensible way to lay a title, a
+            // hint, a slider and two buttons inside 100 px of interior. A utility strip does
+            // not need painted moulding -- it needs to be legible and out of the way -- so it
+            // is a flat panel in the theme's own deep tone with a rule under it.
+            var plate = root.AddComponent<Image>();
+            plate.color = new Color(UiTheme.PanelDeepest.r, UiTheme.PanelDeepest.g,
+                                    UiTheme.PanelDeepest.b, 0.94f);
+
+            var edge = SceneAssembler.NewUi(root, "Edge");
+            var ert = edge.GetComponent<RectTransform>();
+            ert.anchorMin = new Vector2(0f, 0f);
+            ert.anchorMax = new Vector2(1f, 0f);
+            ert.pivot = new Vector2(0.5f, 0f);
+            ert.offsetMin = Vector2.zero;
+            ert.offsetMax = new Vector2(0f, 4f);
+            var edgeImage = edge.AddComponent<Image>();
+            edgeImage.color = new Color(UiTheme.Accent.r, UiTheme.Accent.g, UiTheme.Accent.b, 0.75f);
+            edgeImage.raycastTarget = false;
+
+            CentreText(root, "Title", "CUSTOMISE CONTROLS", new Vector2(0f, -46f),
+                       new Vector2(900f, 46f), UiTheme.Heading, FontStyle.Bold, Ink);
+
+            CentreText(root, "Hint", "DRAG A CONTROL TO MOVE IT.  TOUCH ONE TO RESIZE IT.",
+                       new Vector2(0f, -92f), new Vector2(1200f, 34f), UiTheme.Small,
+                       FontStyle.Normal, Muted);
+
+            panel.SelectedLabel = CentreText(root, "Selected", "", new Vector2(-430f, -150f),
+                                             new Vector2(560f, 40f), UiTheme.Body,
+                                             FontStyle.Bold, Accent);
+            panel.SelectedLabel.alignment = TextAnchor.MiddleLeft;
+
+            // Size slider. 0.6 to 1.8 is the range HudLayoutStore clamps to, so the slider
+            // cannot ask for a size the store will refuse and silently snap back from.
+            var sliderGo = SceneAssembler.NewUi(root, "SizeSlider");
+            var srt = sliderGo.GetComponent<RectTransform>();
+            srt.anchorMin = srt.anchorMax = new Vector2(0.5f, 1f);
+            srt.pivot = new Vector2(0.5f, 0.5f);
+            srt.anchoredPosition = new Vector2(120f, -150f);
+            srt.sizeDelta = new Vector2(420f, 40f);
+            panel.SizeSlider = BuildSlider(sliderGo, 0.6f, 1.8f, 1f);
+
+            panel.SizeValue = CentreText(root, "SizeValue", "--", new Vector2(380f, -150f),
+                                         new Vector2(120f, 40f), UiTheme.Body,
+                                         FontStyle.Bold, Ink);
+
+            panel.ResetButton = WideButton(root, "ResetLayout", "RESET", new Vector2(600f, -150f),
+                                           new Vector2(230f, 70f), out _,
+                                           UiTheme.ButtonTone.Normal, "try-again");
+
+            panel.DoneButton = WideButton(root, "LayoutDone", "DONE", new Vector2(850f, -150f),
+                                          new Vector2(230f, 70f), out _,
+                                          UiTheme.ButtonTone.Strong, "check");
+
+            root.SetActive(false);
+            return panel;
+        }
+
+        /// <summary>A themed slider, matching the audio sliders on the settings screen.</summary>
+        static Slider BuildSlider(GameObject go, float min, float max, float value)
+        {
+            var slider = go.AddComponent<Slider>();
+
+            var track = SceneAssembler.NewUi(go, "Track");
+            var trt = track.GetComponent<RectTransform>();
+            trt.anchorMin = new Vector2(0f, 0.5f);
+            trt.anchorMax = new Vector2(1f, 0.5f);
+            trt.offsetMin = new Vector2(0f, -8f);
+            trt.offsetMax = new Vector2(0f, 8f);
+            var trackImage = track.AddComponent<Image>();
+            trackImage.sprite = UiTheme.BarTrack;
+            trackImage.type = Image.Type.Sliced;
+            trackImage.pixelsPerUnitMultiplier = 1f;
+
+            var fillArea = SceneAssembler.NewUi(go, "FillArea");
+            var frt = fillArea.GetComponent<RectTransform>();
+            frt.anchorMin = new Vector2(0f, 0.5f);
+            frt.anchorMax = new Vector2(1f, 0.5f);
+            frt.offsetMin = new Vector2(0f, -8f);
+            frt.offsetMax = new Vector2(0f, 8f);
+
+            var fill = SceneAssembler.NewUi(fillArea, "Fill");
+            var fillRt = fill.GetComponent<RectTransform>();
+            fillRt.anchorMin = Vector2.zero;
+            fillRt.anchorMax = Vector2.one;
+            fillRt.offsetMin = Vector2.zero;
+            fillRt.offsetMax = Vector2.zero;
+            var fillImage = fill.AddComponent<Image>();
+            fillImage.sprite = UiTheme.BarFill;
+            fillImage.type = Image.Type.Sliced;
+            fillImage.pixelsPerUnitMultiplier = 1f;
+
+            var handle = SceneAssembler.NewUi(go, "Handle");
+            var hrt = handle.GetComponent<RectTransform>();
+            hrt.sizeDelta = new Vector2(34f, 34f);
+            var handleImage = handle.AddComponent<Image>();
+            handleImage.sprite = SceneAssembler.LoadSprite("ui_circle", SceneAssembler.MakeCircleSprite);
+            handleImage.color = UiTheme.Accent;
+
+            slider.fillRect = fillRt;
+            slider.handleRect = hrt;
+            slider.targetGraphic = handleImage;
+            slider.direction = Slider.Direction.LeftToRight;
+            slider.minValue = min;
+            slider.maxValue = max;
+            slider.SetValueWithoutNotify(value);
+            return slider;
+        }
 
         static FullMapScreen BuildFullMap(GameObject canvas, Sprite circle)
         {

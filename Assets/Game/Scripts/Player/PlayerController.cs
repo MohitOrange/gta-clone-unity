@@ -56,6 +56,7 @@ namespace MiniGTA
         public HudContext Hud;
 
         CharacterController _cc;
+        PlayerStance _stance;
         PlayerAnimation _anim;
         Transform _cam;
 
@@ -73,6 +74,7 @@ namespace MiniGTA
         void Awake()
         {
             _cc = GetComponent<CharacterController>();
+            _stance = GetComponent<PlayerStance>();
             _anim = GetComponentInChildren<PlayerAnimation>();
             if (Camera.main != null) _cam = Camera.main.transform;
         }
@@ -104,6 +106,10 @@ namespace MiniGTA
 
             Vector3 wish = CameraRelative(hub.Move);
             float targetSpeed = hub.SprintHeld ? RunSpeed : WalkSpeed;
+
+            // Crouching and going prone slow you down. Applied here rather than inside
+            // PlayerStance so there is still exactly one line that decides ground speed.
+            if (_stance != null) targetSpeed *= _stance.SpeedFactor;
             Vector3 targetVelocity = wish * (targetSpeed * hub.Move.magnitude);
 
             float accel = GroundAcceleration * (IsGrounded ? 1f : AirControl);

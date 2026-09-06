@@ -88,6 +88,9 @@ namespace MiniGTA
         bool _interactQueued;
         bool _attackQueued;
         bool _reloadQueued;
+        bool _crouchQueued;
+        bool _proneQueued;
+        bool _switchQueued;
         bool _hornQueued;
 
         bool _keyboardHandbrake;
@@ -259,6 +262,9 @@ namespace MiniGTA
         /// half-empty magazine could only be topped up by firing it dry first.
         /// </summary>
         public bool ConsumeReload() { bool v = _reloadQueued; _reloadQueued = false; return v; }
+        public bool ConsumeCrouch() { bool v = _crouchQueued; _crouchQueued = false; return v; }
+        public bool ConsumeProne() { bool v = _proneQueued; _proneQueued = false; return v; }
+        public bool ConsumeWeaponSwitch() { bool v = _switchQueued; _switchQueued = false; return v; }
 
         /// <summary>
         /// Unconditional Interact. Only for the one consumer that owns the button outright --
@@ -340,6 +346,15 @@ namespace MiniGTA
         public void QueueAttack() { _attackQueued = true; }
         public void QueueReload() { _reloadQueued = true; }
 
+        /// <summary>Toggles crouch. One press, one toggle.</summary>
+        public void QueueCrouch() { _crouchQueued = true; }
+
+        /// <summary>Toggles prone.</summary>
+        public void QueueProne() { _proneQueued = true; }
+
+        /// <summary>Cycles to the next carried weapon.</summary>
+        public void QueueWeaponSwitch() { _switchQueued = true; }
+
         void Awake()
         {
             if (Instance != null && Instance != this) { Destroy(gameObject); return; }
@@ -396,6 +411,9 @@ namespace MiniGTA
                 if (kb.eKey.wasPressedThisFrame) _interactQueued = true;
                 if (kb.fKey.wasPressedThisFrame) _attackQueued = true;
                 if (kb.rKey.wasPressedThisFrame) _reloadQueued = true;
+                if (kb.cKey.wasPressedThisFrame) _crouchQueued = true;
+                if (kb.zKey.wasPressedThisFrame) _proneQueued = true;
+                if (kb.qKey.wasPressedThisFrame) _switchQueued = true;
                 if (kb.hKey.wasPressedThisFrame) _hornQueued = true;
 
                 // Held F is automatic fire on the desktop build, so the same code path the

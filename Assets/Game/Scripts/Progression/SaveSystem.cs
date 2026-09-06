@@ -27,7 +27,7 @@ namespace MiniGTA
     public class SaveData
     {
         /// <summary>Bumped when fields are added. Older saves still load; new fields default.</summary>
-        public const int CurrentVersion = 4;
+        public const int CurrentVersion = 5;   // v5 adds HudLayout
 
         public int Version = CurrentVersion;
 
@@ -61,6 +61,13 @@ namespace MiniGTA
 
         public float PlayerX, PlayerY, PlayerZ;
         public bool HasPosition;
+
+        /// <summary>
+        /// Where the player has dragged their touch controls. Empty for anyone who has never
+        /// opened the layout editor, which is why it is stored as a sparse list of deltas
+        /// rather than a full snapshot of every control.
+        /// </summary>
+        public HudLayoutData HudLayout = new HudLayoutData();
 
         public string SavedAtUtc = "";
     }
@@ -241,6 +248,8 @@ namespace MiniGTA
                 data.HasPosition = true;
             }
 
+            data.HudLayout = HudLayoutStore.Capture();
+
             data.SavedAtUtc = System.DateTime.UtcNow.ToString("o");
 
             try
@@ -314,6 +323,11 @@ namespace MiniGTA
 
             PlayerProgress.Instance?.RestoreFrom(data);
             Garage.Instance?.Restore(data.Garage);
+
+            // Touch-control layout. Restored even from an older save, where the field is simply
+            // absent and deserialises to an empty list -- which is exactly the default layout,
+            // so a v4 save loads as an uncustomised HUD rather than needing a migration step.
+            HudLayoutStore.Restore(data.HudLayout);
 
             if (data.HasPosition && Player != null)
             {

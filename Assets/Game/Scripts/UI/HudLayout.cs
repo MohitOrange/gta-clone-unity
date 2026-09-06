@@ -122,7 +122,9 @@ namespace MiniGTA
         /// </summary>
         void LateUpdate()
         {
-            bool visible = !MenuState.AnyOpen;
+            // The layout editor is the one menu that needs the controls left on screen: it
+            // edits the real HUD in place, so hiding them would leave nothing to drag.
+            bool visible = !MenuState.AnyOpen || HudCustomisable.EditMode;
 
             foreach (var root in ControlRoots)
                 if (root != null && root.activeSelf != visible) root.SetActive(visible);

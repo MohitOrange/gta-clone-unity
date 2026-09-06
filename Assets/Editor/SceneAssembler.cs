@@ -507,6 +507,10 @@ namespace MiniGTA.EditorTools
 
             root.AddComponent<PlayerController>();
             root.AddComponent<PlayerVehicleController>();
+
+            // Crouch and prone. The collider maths and the speed are real; neither pose has an
+            // animation in either imported pack -- see the note on PlayerStance itself.
+            root.AddComponent<PlayerStance>();
             root.AddComponent<RedLightMonitor>();
 
             var health = root.AddComponent<Health>();
@@ -644,6 +648,9 @@ namespace MiniGTA.EditorTools
             context.Attack = buttons.Attack;
             context.Aim = buttons.Aim;
             context.Reload = buttons.Reload;
+            context.WeaponSwitch = buttons.WeaponSwitch;
+            context.Crouch = buttons.Crouch;
+            context.Prone = buttons.Prone;
             context.Gas = buttons.Gas;
             context.Brake = buttons.Brake;
             context.Handbrake = buttons.Handbrake;
@@ -755,6 +762,12 @@ namespace MiniGTA.EditorTools
             var knobRt = knobGo.GetComponent<RectTransform>();
             knobRt.sizeDelta = new Vector2(108f, 108f);
 
+            // The stick's zone is the full lower-left rect; what the player actually moves is
+            // the ring and knob inside it, so the customisable component goes on the zone and
+            // its offset shifts the whole control together.
+            if (zone.GetComponent<HudCustomisable>() == null)
+                zone.AddComponent<HudCustomisable>().Id = "MoveStick";
+
             var stick = zone.AddComponent<VirtualJoystick>();
             stick.Ring = ringRt;
             stick.Knob = knobRt;
@@ -839,6 +852,7 @@ namespace MiniGTA.EditorTools
         class ActionButtons
         {
             public HudButton Jump, Sprint, Interact, Attack, Aim, Reload;
+            public HudButton Crouch, Prone, WeaponSwitch;
             public HudButton Gas, Brake, Handbrake, Horn;
         }
 
@@ -897,6 +911,15 @@ namespace MiniGTA.EditorTools
                 Interact = MakeCircleButton(cluster, HudAction.Interact, "ENTER", "door", false,
                                             new Vector2(-250f, 430f), 112f),
 
+                // Stance and weapon cycling, on the outer arc where the thumb reaches with a
+                // small stretch -- these are pressed between fights, not during one.
+                Crouch = MakeCircleButton(cluster, HudAction.Crouch, "CROUCH", "down-arrow", false,
+                                          new Vector2(-455f, 355f), 100f),
+                Prone = MakeCircleButton(cluster, HudAction.Prone, "PRONE", "Minus", false,
+                                         new Vector2(-575f, 300f), 96f),
+                WeaponSwitch = MakeCircleButton(cluster, HudAction.WeaponSwitch, "SWAP", "next", false,
+                                                new Vector2(-80f, 470f), 100f),
+
                 // Driving, sharing those positions.
                 Gas = MakeCircleButton(cluster, HudAction.Gas, "GAS", "fast-forward", true,
                                        new Vector2(-120f, 120f), 164f, primary: true),
@@ -909,11 +932,27 @@ namespace MiniGTA.EditorTools
             };
 
             AuditFan(cluster);
+
+            // Everything the settings screen lets the player move. Added here rather than in
+            // the settings panel so the component travels with the control: the interface is
+            // rebuilt wholesale by this tooling, and a panel holding ten serialised references
+            // would come back with ten nulls.
+            foreach (var id in HudLayoutStore.Customisable)
+            {
+                var found = cluster.transform.Find("Btn_" + id.Replace("Btn_", ""));
+                if (found == null) continue;
+                if (found.GetComponent<HudCustomisable>() == null)
+                    found.gameObject.AddComponent<HudCustomisable>().Id = found.name;
+            }
+
             return b;
         }
 
-        const float FanWidth = 560f;
-        const float FanHeight = 500f;
+        // Grown from 560x500 to take crouch, prone and weapon-switch. AuditFan asserts every
+        // pair is further apart than the sum of their radii and that nothing leaves the box, so
+        // this is checked at build time rather than by eye.
+        const float FanWidth = 660f;
+        const float FanHeight = 560f;
 
         /// <summary>
         /// Fails the build if two buttons in the fan overlap, or if one leaves the cluster.

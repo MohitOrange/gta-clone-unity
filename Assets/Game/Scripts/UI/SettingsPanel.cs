@@ -39,6 +39,12 @@ namespace MiniGTA
         [Header("Navigation")]
         public Button BackButton;
 
+        [Header("Controls")]
+        [Tooltip("Opens the touch-control layout editor.")]
+        public Button CustomiseHudButton;
+        [Tooltip("The editor itself. Assigned by the interface builder.")]
+        public HudLayoutEditor LayoutEditor;
+
         [Header("Style")]
         public Color SelectedTint = new Color(0.30f, 0.85f, 0.55f, 0.55f);
         public Color UnselectedTint = new Color(1f, 1f, 1f, 0.14f);
@@ -66,6 +72,12 @@ namespace MiniGTA
             if (HighButton != null) HighButton.onClick.AddListener(() => Apply(s => s.SetTier(QualityTier.High)));
 
             if (BackButton != null) BackButton.onClick.AddListener(Hide);
+
+            // Reference only, wired at runtime -- an AddListener lambda is never serialised
+            // into the scene, so a listener attached by the builder exists in the editor
+            // session and nowhere in the APK. Same trap as the pause button.
+            if (CustomiseHudButton != null)
+                CustomiseHudButton.onClick.AddListener(OpenLayoutEditor);
         }
 
         void Wire(Slider slider, System.Action<float> handler)
@@ -89,6 +101,17 @@ namespace MiniGTA
 
             change(settings);
             Refresh();
+        }
+
+        /// <summary>Hands off to the touch-control layout editor, and comes back after.</summary>
+        void OpenLayoutEditor()
+        {
+            if (LayoutEditor == null)
+            {
+                LayoutEditor = FindAnyObjectByType<HudLayoutEditor>(FindObjectsInactive.Include);
+                if (LayoutEditor == null) return;
+            }
+            LayoutEditor.OpenFrom(this);
         }
 
         public void OpenFrom(UiPanel returnTo)

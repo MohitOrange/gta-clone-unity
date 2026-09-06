@@ -11,7 +11,11 @@ namespace MiniGTA
     /// City.unity, so inserting into the middle would silently repoint every existing
     /// button at the wrong action.
     /// </summary>
-    public enum HudAction { Jump, Sprint, Interact, Attack, Horn, Handbrake, Gas, Brake, Aim, Reload }
+    public enum HudAction
+    {
+        Jump, Sprint, Interact, Attack, Horn, Handbrake, Gas, Brake, Aim, Reload,
+        Crouch, Prone, WeaponSwitch,
+    }
 
     /// <summary>
     /// A context-aware action button.
@@ -121,6 +125,9 @@ namespace MiniGTA
                 case HudAction.Interact: hub.QueueInteract(); break;
                 case HudAction.Attack: hub.QueueAttack(); break;
                 case HudAction.Reload: hub.QueueReload(); break;
+                case HudAction.Crouch: hub.QueueCrouch(); break;
+                case HudAction.Prone: hub.QueueProne(); break;
+                case HudAction.WeaponSwitch: hub.QueueWeaponSwitch(); break;
                 case HudAction.Horn: hub.QueueHorn(); break;
             }
         }

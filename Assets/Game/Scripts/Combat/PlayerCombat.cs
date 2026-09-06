@@ -123,6 +123,11 @@ namespace MiniGTA
 
             TickReload(hub);
 
+            // Weapon switching. WeaponController.TryCycle already owns the slot arithmetic and
+            // the locking rules -- it refuses mid-shot and mid-reload, and does nothing with
+            // fewer than two weapons carried -- so this is a call, not a reimplementation.
+            if (hub.ConsumeWeaponSwitch() && Weapons != null) Weapons.TryCycle();
+
             // A tap fires once; holding the trigger keeps firing. Consume unconditionally so a
             // tap cannot survive the cooldown and fire late.
             bool tapped = hub.ConsumeAttack();

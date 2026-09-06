@@ -31,6 +31,11 @@ namespace MiniGTA
         public HudButton Aim;
         [Tooltip("Deliberate reload. Armed only, same reason as Aim.")]
         public HudButton Reload;
+        [Tooltip("Cycles carried weapons. Armed only -- with nothing in hand there is nothing "
+                 + "to cycle to.")]
+        public HudButton WeaponSwitch;
+        public HudButton Crouch;
+        public HudButton Prone;
         public HudButton Horn;
         public HudButton Handbrake;
         public HudButton Gas;
@@ -98,6 +103,12 @@ namespace MiniGTA
             bool armed = _context == PlayerContext.OnFootArmed;
             Show(Aim, armed);
             Show(Reload, armed);
+            Show(WeaponSwitch, armed);
+
+            // Stance is an on-foot idea. Underwater the capsule drives the swim test, and
+            // behind the wheel it means nothing at all.
+            Show(Crouch, onFoot);
+            Show(Prone, onFoot);
 
             Show(Horn, driving);
             Show(Handbrake, driving);
@@ -131,6 +142,9 @@ namespace MiniGTA
             if (Attack != null) _scratch.Add(Attack);
             if (Aim != null) _scratch.Add(Aim);
             if (Reload != null) _scratch.Add(Reload);
+            if (WeaponSwitch != null) _scratch.Add(WeaponSwitch);
+            if (Crouch != null) _scratch.Add(Crouch);
+            if (Prone != null) _scratch.Add(Prone);
             if (Horn != null) _scratch.Add(Horn);
             if (Handbrake != null) _scratch.Add(Handbrake);
             if (Gas != null) _scratch.Add(Gas);
