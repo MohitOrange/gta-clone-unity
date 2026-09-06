@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 57e4794a23963e3498317d91de0f8be2
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 305674
+  packageName: Helicopter Attack 3D - Game Template
+  packageVersion: 1.1
+  assetPath: Assets/HelicopterAttack/Prefabs/UI/Win_UI.prefab
+  uploadId: 734569

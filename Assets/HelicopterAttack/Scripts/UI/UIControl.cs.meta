@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: a6dd9bc89d54a1d4fbeab957492e7701
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 305674
+  packageName: Helicopter Attack 3D - Game Template
+  packageVersion: 1.1
+  assetPath: Assets/HelicopterAttack/Scripts/UI/UIControl.cs
+  uploadId: 734569

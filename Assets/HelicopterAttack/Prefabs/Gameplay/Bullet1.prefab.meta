@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 63461f76f5daaac41979d9a6347138ae
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 305674
+  packageName: Helicopter Attack 3D - Game Template
+  packageVersion: 1.1
+  assetPath: Assets/HelicopterAttack/Prefabs/Gameplay/Bullet1.prefab
+  uploadId: 734569

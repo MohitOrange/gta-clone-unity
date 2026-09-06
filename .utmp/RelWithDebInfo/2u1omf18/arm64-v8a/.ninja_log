@@ -1,0 +1,21 @@
+# ninja log v5
+26	4345	8103272035087840	GameActivity/CMakeFiles/game.dir/UGAApplication.cpp.o	d84043af4849dfa8
+132	896	8099879677576893	FramePacing/CMakeFiles/swappywrapper.dir/UnitySwappyWrapper.cpp.o	a5da1073009e5691
+134	3717	8103272028876206	GameActivity/CMakeFiles/game.dir/UGASoftKeyboard.cpp.o	84d167484466d8ac
+58	3450	8103272026144613	GameActivity/CMakeFiles/game.dir/UGAConfiguration.cpp.o	2e6910ae55732fe5
+898	1300	8099879681222342	C:/unity_games/gta/gta/Library/Bee/Android/Prj/IL2CPP/Gradle/unityLibrary/build/intermediates/cxx/RelWithDebInfo/2u1omf18/obj/arm64-v8a/libswappywrapper.so	e0a4d76282e236ec
+102	3445	8103272025964761	GameActivity/CMakeFiles/game.dir/UGAInputKeyEvent.cpp.o	8ee3646bc4b5fb65
+71	3439	8103272025964761	GameActivity/CMakeFiles/game.dir/UGAEntry.cpp.o	5f6180f8293365c0
+44	3544	8103272027131873	GameActivity/CMakeFiles/game.dir/UGADebug.cpp.o	a18cd9c36dce8e70
+87	3477	8103272026481979	GameActivity/CMakeFiles/game.dir/UGAInputMotionEvent.cpp.o	84b43df3600fed54
+4346	4711	8103272038760929	C:/unity_games/gta/gta/Library/Bee/Android/Prj/IL2CPP/Gradle/unityLibrary/build/intermediates/cxx/RelWithDebInfo/2u1omf18/obj/arm64-v8a/libgame.so	a2627bb380d5466f
+118	4071	8103272032426278	GameActivity/CMakeFiles/game.dir/UGAInput.cpp.o	9c3982fe4f5687f6
+127	3679	8103563197692552	GameActivity/CMakeFiles/game.dir/UGAInputKeyEvent.cpp.o	8ee3646bc4b5fb65
+82	3749	8103563198544273	GameActivity/CMakeFiles/game.dir/UGAConfiguration.cpp.o	2e6910ae55732fe5
+41	3768	8103563197929162	GameActivity/CMakeFiles/game.dir/UGAEntry.cpp.o	5f6180f8293365c0
+143	3772	8103563198770489	GameActivity/CMakeFiles/game.dir/UGAInputMotionEvent.cpp.o	84b43df3600fed54
+62	3822	8103563199489820	GameActivity/CMakeFiles/game.dir/UGADebug.cpp.o	a18cd9c36dce8e70
+160	3897	8103563200214888	GameActivity/CMakeFiles/game.dir/UGASoftKeyboard.cpp.o	84d167484466d8ac
+108	4217	8103563203422760	GameActivity/CMakeFiles/game.dir/UGAInput.cpp.o	9c3982fe4f5687f6
+22	4401	8103563205095872	GameActivity/CMakeFiles/game.dir/UGAApplication.cpp.o	d84043af4849dfa8
+4401	4704	8103563208244573	C:/unity_games/gta/gta/Library/Bee/Android/Prj/IL2CPP/Gradle/unityLibrary/build/intermediates/cxx/RelWithDebInfo/2u1omf18/obj/arm64-v8a/libgame.so	a2627bb380d5466f

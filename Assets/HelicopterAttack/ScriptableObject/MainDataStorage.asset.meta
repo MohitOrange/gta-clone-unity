@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 1a6b74046b55d8a448613158c232a27f
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 305674
+  packageName: Helicopter Attack 3D - Game Template
+  packageVersion: 1.1
+  assetPath: Assets/HelicopterAttack/ScriptableObject/MainDataStorage.asset
+  uploadId: 734569

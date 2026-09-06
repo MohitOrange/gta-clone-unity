@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: 8590516d3102136488774a3e2f50f9ea
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 305674
+  packageName: Helicopter Attack 3D - Game Template
+  packageVersion: 1.1
+  assetPath: Assets/HelicopterAttack/Scripts/Gameplay/InvisibleAtStart.cs
+  uploadId: 734569

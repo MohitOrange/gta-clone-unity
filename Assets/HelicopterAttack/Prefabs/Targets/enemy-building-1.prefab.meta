@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 39afd80f79f618e449da30315793100d
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 305674
+  packageName: Helicopter Attack 3D - Game Template
+  packageVersion: 1.1
+  assetPath: Assets/HelicopterAttack/Prefabs/Targets/enemy-building-1.prefab
+  uploadId: 734569

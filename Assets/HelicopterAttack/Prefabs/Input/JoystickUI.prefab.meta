@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: feb33066d45903d4c9180136e445295f
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 305674
+  packageName: Helicopter Attack 3D - Game Template
+  packageVersion: 1.1
+  assetPath: Assets/HelicopterAttack/Prefabs/Input/JoystickUI.prefab
+  uploadId: 734569

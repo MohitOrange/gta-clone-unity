@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: f6347e198eff41a40b36892501835ee6
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 305674
+  packageName: Helicopter Attack 3D - Game Template
+  packageVersion: 1.1
+  assetPath: Assets/HelicopterAttack/Scripts/Gameplay/Projectile_Base.cs
+  uploadId: 734569

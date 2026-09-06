@@ -1,0 +1,20 @@
+fileFormatVersion: 2
+guid: df0b6ff2d7c3247469b570265619cec6
+timeCreated: 1555660515
+licenseType: Store
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: -200
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 305674
+  packageName: Helicopter Attack 3D - Game Template
+  packageVersion: 1.1
+  assetPath: Assets/HelicopterAttack/Scripts/Gameplay/DataStorage.cs
+  uploadId: 734569

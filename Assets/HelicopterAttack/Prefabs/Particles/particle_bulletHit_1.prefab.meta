@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 27adb96732a10754189f3ae7ce15bf43
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 305674
+  packageName: Helicopter Attack 3D - Game Template
+  packageVersion: 1.1
+  assetPath: Assets/HelicopterAttack/Prefabs/Particles/particle_bulletHit_1.prefab
+  uploadId: 734569

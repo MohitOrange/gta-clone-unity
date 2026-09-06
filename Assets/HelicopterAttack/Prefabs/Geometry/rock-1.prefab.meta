@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 0b6c17682089fb14cb4d65aa7af4b6c9
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 305674
+  packageName: Helicopter Attack 3D - Game Template
+  packageVersion: 1.1
+  assetPath: Assets/HelicopterAttack/Prefabs/Geometry/rock-1.prefab
+  uploadId: 734569

@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 818774478197dc048837362b6e60f365
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 305674
+  packageName: Helicopter Attack 3D - Game Template
+  packageVersion: 1.1
+  assetPath: Assets/HelicopterAttack/Prefabs/PlayerHeli/PlayerHeli-1.prefab
+  uploadId: 734569

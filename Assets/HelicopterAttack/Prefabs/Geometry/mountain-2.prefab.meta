@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: c2aa2e5111868a348931271d2f76e150
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 305674
+  packageName: Helicopter Attack 3D - Game Template
+  packageVersion: 1.1
+  assetPath: Assets/HelicopterAttack/Prefabs/Geometry/mountain-2.prefab
+  uploadId: 734569

@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 1ed366e7ad1877e4690b288f80e73bcc
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 305674
+  packageName: Helicopter Attack 3D - Game Template
+  packageVersion: 1.1
+  assetPath: Assets/HelicopterAttack/Art/Materials/Mat_Particle_Blend_2.mat
+  uploadId: 734569

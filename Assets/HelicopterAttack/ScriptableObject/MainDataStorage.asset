@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: df0b6ff2d7c3247469b570265619cec6, type: 3}
+  m_Name: MainDataStorage
+  m_EditorClassIdentifier: 
+  LevelNum: 0
+  CurrentCharacter: 0
+  PlayerWeapons: []
+  Inv_HealthPackCount: 2
+  Inv_GrenadeCount: 2
+  Inv_CoinCount: 2
+  CharacterEnables: 
+  WeaponEnables: 
+  PowerEnables: 
+  LevelUnlocked_Map1: 0
+  LevelCompleted_Map1: 0
+  LevelScores_Map1: 
+  LevelUnlocked_Map2: 0
+  Level_Weapons: 0000000000000000
+  SelectedWeaponSlot: 0
+  SelectedCharacter: 0
+  Level_Items: 00000000000000000000000000000000
+  SelectedItemSlot: 0
+  UnlockedItemSlots: 2

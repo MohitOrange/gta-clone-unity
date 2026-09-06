@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 03b4a83e1f3007843ad15fd76cd83779
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 305674
+  packageName: Helicopter Attack 3D - Game Template
+  packageVersion: 1.1
+  assetPath: Assets/HelicopterAttack/Art/Materials/mat_wood_1.mat
+  uploadId: 734569
