@@ -108,6 +108,19 @@ namespace MiniGTA
                  + "taken. Above 1 it brakes before the edge rather than at it.")]
         public float WadeLookahead = 2.5f;
 
+        [Header("Obstacles")]
+        [Tooltip("How far ahead to look for walls, in metres. Long enough to turn before "
+                 + "arriving, short enough not to swerve around things two buildings away.")]
+        public float ObstacleLookahead = 1.6f;
+
+        [Tooltip("How far to swing the heading when something is in the way. Shallow angles "
+                 + "scrape along the wall; steep ones read as a panic turn.")]
+        public float ObstacleTurn = 55f;
+
+        [Tooltip("Seconds of trying to move while getting nowhere before giving up on the "
+                 + "current destination and choosing another.")]
+        public float StuckPatience = 1.2f;
+
         [Tooltip("Pause at each end before turning around, so the beat does not look robotic.")]
         public Vector2 DwellRange = new Vector2(1.5f, 4.5f);
 
@@ -436,7 +449,17 @@ namespace MiniGTA
                     Random.Range(-WanderExtents.y, WanderExtents.y));
                 _wanderTarget.y = transform.position.y;
 
-                if (_water == null || DepthAt(_wanderTarget) <= MaxWadeDepth) return;
+                bool wet = _water != null && DepthAt(_wanderTarget) > MaxWadeDepth;
+                if (wet) continue;
+
+                // Nor inside a building. Cheap to reject here; expensive to discover by
+                // walking into it for the next thirty seconds.
+                if (_cc != null && Physics.CheckSphere(_wanderTarget + Vector3.up * _cc.radius,
+                                                       _cc.radius, ObstacleMask,
+                                                       QueryTriggerInteraction.Ignore))
+                    continue;
+
+                return;
             }
 
             // Six tries all wet -- this pedestrian's box is mostly sea. Stay put rather than
@@ -583,6 +606,98 @@ namespace MiniGTA
             return DepthAt(transform.position) > MaxWadeDepth;
         }
 
+        // -------------------------------------------------------------- obstacles
+
+        /// <summary>
+        /// Steers around walls instead of walking into them.
+        ///
+        /// <b>The gap this closes.</b> Pedestrian did no obstacle detection whatsoever -- not a
+        /// raycast, not a spherecast, no Physics call of any kind. The same shape of hole as the
+        /// water bug: PickWanderTarget chose a point in a rectangle and nothing asked whether
+        /// anything was in the way of getting there. They do not clip through walls, because a
+        /// CharacterController blocks them, so the symptom is worse than it sounds -- they walk
+        /// into a building and grind against it at zero speed until the dwell timer or a new
+        /// wander target happens to release them. Measured downtown before this fix: 2 of 24
+        /// simulating pedestrians pinned against City geometry at 0.00 m/s.
+        ///
+        /// <b>Same colliders as the player.</b> This casts against everything except Ignore
+        /// Raycast, which is exactly what PlayerController.CollisionMask uses, so it sees the
+        /// building box colliders added by the CityBuilder collision fix. There is no second
+        /// collision setup and no obstacle layer to keep in sync.
+        ///
+        /// Other pedestrians are skipped deliberately: they carry CharacterControllers, they
+        /// move, and Separation already handles them. Treating a passer-by as a wall would make
+        /// a crowd swerve around itself.
+        /// </summary>
+        Vector3 AvoidObstacles(Vector3 desired, float speed)
+        {
+            if (desired.sqrMagnitude < 0.0001f) return desired;
+            if (_cc == null) return desired;
+
+            float reach = Mathf.Max(ObstacleLookahead, speed * _lodStep * 2f);
+
+            if (!Blocked(desired, reach)) return desired;
+
+            // Turn towards whichever side is open. Checked in both directions rather than
+            // always turning the same way, or a crowd meeting the same wall all shuffles left.
+            Vector3 left = Quaternion.Euler(0f, -ObstacleTurn, 0f) * desired;
+            Vector3 right = Quaternion.Euler(0f, ObstacleTurn, 0f) * desired;
+
+            bool leftBlocked = Blocked(left, reach);
+            bool rightBlocked = Blocked(right, reach);
+
+            if (!leftBlocked && rightBlocked) return left.normalized;
+            if (!rightBlocked && leftBlocked) return right.normalized;
+            if (!leftBlocked && !rightBlocked)
+                // Both open: keep the one closer to where they were already facing.
+                return (Vector3.Dot(left, transform.forward) > Vector3.Dot(right, transform.forward)
+                        ? left : right).normalized;
+
+            // Boxed in on three sides -- try a hard turn before giving up and reversing.
+            Vector3 hardLeft = Quaternion.Euler(0f, -110f, 0f) * desired;
+            if (!Blocked(hardLeft, reach)) return hardLeft.normalized;
+
+            Vector3 hardRight = Quaternion.Euler(0f, 110f, 0f) * desired;
+            if (!Blocked(hardRight, reach)) return hardRight.normalized;
+
+            return (-desired).normalized;
+        }
+
+        /// <summary>Is there something solid this way, that is not another pedestrian?</summary>
+        bool Blocked(Vector3 direction, float reach)
+        {
+            Vector3 origin = transform.position + Vector3.up * (_cc.height * 0.5f);
+            float radius = _cc.radius * 0.9f;
+
+            if (!Physics.SphereCast(origin, radius, direction.normalized, out RaycastHit hit,
+                                    reach, ObstacleMask, QueryTriggerInteraction.Ignore))
+                return false;
+
+            // A moving body is not a wall. Separation deals with those.
+            return hit.collider.GetComponent<CharacterController>() == null
+                   && hit.collider.GetComponentInParent<Pedestrian>() == null;
+        }
+
+        /// <summary>
+        /// The same collision the player is blocked by: everything except Ignore Raycast.
+        /// Resolved once because LayerMask.NameToLayer is a string lookup.
+        /// </summary>
+        static int _obstacleMask;
+        static bool _obstacleMaskReady;
+
+        static int ObstacleMask
+        {
+            get
+            {
+                if (!_obstacleMaskReady)
+                {
+                    _obstacleMask = ~(1 << LayerMask.NameToLayer("Ignore Raycast"));
+                    _obstacleMaskReady = true;
+                }
+                return _obstacleMask;
+            }
+        }
+
         // ---------------------------------------------------------------- movement
 
         void Move(Vector3 direction, float speed)
@@ -598,7 +713,14 @@ namespace MiniGTA
             if (direction2.sqrMagnitude < 0.0001f && InDeepWater())
                 direction2 = AvoidDeepWater(transform.forward, WalkSpeed);
 
-            Vector3 desired = direction2;
+            // Walls, at the same choke point and for the same reason: wandering, crossing,
+            // dwelling and fleeing all pass through here, and fleeing is again the case a
+            // target-side check alone would miss -- a panicking pedestrian runs at whatever is
+            // behind them, building or not.
+            //
+            // Only when actually moving, and Move is never reached at Frozen LOD, so a
+            // spherecast is paid for by pedestrians who are walking and by nobody else.
+            Vector3 desired = AvoidObstacles(direction2, speed);
 
             // Simple separation: step around anyone standing in your personal space.
             // Separation is the expensive half of the tick, and the mid band is far enough
@@ -623,6 +745,59 @@ namespace MiniGTA
             // 0.5 is the walk pose on the locomotion blend, 1.0 the run.
             float blend = !moving ? 0f : (speed > WalkSpeed * 1.5f ? 1f : 0.5f);
             if (_anim != null) _anim.SetLocomotion(blend, true, false, 0f);
+
+            TickStuck(moving);
+        }
+
+        float _stuckTimer;
+
+        /// <summary>
+        /// Gives up on a destination that cannot be reached.
+        ///
+        /// <b>Steering alone is not enough, and this is why.</b> Two pedestrians were measured
+        /// pinned against a building with five of eight headings completely clear and not
+        /// overlapping any collider -- so the obstacle steering was working and they still went
+        /// nowhere. Their wander target was inside the building. Every tick they turned away
+        /// from the wall, TickWalking re-aimed them at the unreachable point, and they
+        /// oscillated on the spot at a net zero.
+        ///
+        /// So rather than trying to predict which targets are unreachable -- which cannot be
+        /// done in general, since a target can become unreachable after it is chosen -- this
+        /// watches the outcome. Trying to move and achieving nothing for over a second means
+        /// the destination is wrong, whatever the reason, so pick another. It is the same
+        /// principle as the water rule turning them back: react to the world, do not assume it.
+        ///
+        /// Uses the CharacterController's own achieved velocity, which is what the last Move
+        /// actually managed after collision, not what was asked for.
+        /// </summary>
+        void TickStuck(bool tryingToMove)
+        {
+            if (!tryingToMove || _cc == null) { _stuckTimer = 0f; return; }
+
+            Vector3 v = _cc.velocity;
+            v.y = 0f;
+
+            if (v.magnitude >= 0.2f) { _stuckTimer = 0f; return; }
+
+            _stuckTimer += _lodStep;
+            if (_stuckTimer < StuckPatience) return;
+
+            _stuckTimer = 0f;
+
+            if (Route == PedestrianRoute.Wander)
+            {
+                PickWanderTarget();
+            }
+            else
+            {
+                // On a fixed route, turn round and take the leg the other way rather than
+                // standing in a doorway forever.
+                _headingToB = !_headingToB;
+            }
+
+            // A short dwell so a pedestrian who is genuinely boxed in does not thrash between
+            // targets every frame.
+            _dwellTimer = Random.Range(0.3f, 0.8f);
         }
 
         /// <summary>Scratch list for this pedestrian's neighbour query. One per instance.</summary>

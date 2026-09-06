@@ -1959,8 +1959,17 @@ namespace MiniGTA.EditorTools
             // 104 units, not 96: at 96 these measured 6.7 mm against a 7 mm touch floor on a
             // 20:9 phone. They are corner-anchored with nothing packed against them, so the
             // extra 8 units cost nothing in layout.
+            // Bottom-centre, in the gap between the movement stick and the action fan.
+            //
+            // Measured before moving it rather than guessing at a free spot. In canvas units
+            // the bottom strip is occupied by MoveStick out to x 806 and ActionButtons from
+            // x 1304, which leaves 806..1304 empty -- and screen centre, 960, sits inside it
+            // with roughly 150 units of clearance either side.
+            //
+            // It was previously stacked in the top-right column under the wanted stars, the
+            // ammo readout and the wallet, where the largest free gap on that edge is 39 units.
             var storeButton = MakeHudCircleButton(canvas, "StoreButton", circle, font, "shop",
-                                                  new Vector2(1f, 1f), new Vector2(-46f, -328f), 104f,
+                                                  new Vector2(0.5f, 0f), new Vector2(0f, 112f), 104f,
                                                   "STORE");
 
             // Reference only -- StorePanel.Awake wires it at runtime.
